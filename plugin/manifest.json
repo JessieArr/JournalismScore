@@ -8,10 +8,16 @@
     "icons": {
       "48": "icons/border-48.png"
     },
-  
+
+    "permissions": ["activeTab"],
+    "browser_action": {
+      "default_icon": "icons/border-48.png",
+      "default_title": "Journalism Score",
+      "default_popup": "popup/page_score.html"
+    },
     "content_scripts": [
       {
-        "matches": ["*://*.mozilla.org/*"],
+        "matches": ["*://*.dailywire.com/*", "*://*.tyt.com/*", "*://*.jacobin.com/*", "*://*.reuters.com/*"],
         "js": ["journalism-score.js"]
       }
     ]

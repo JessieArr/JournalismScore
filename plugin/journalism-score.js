@@ -6,14 +6,29 @@ document.body.style.border = "5px solid red";
  * @returns { Node[] } An array of text nodes found under the given element.
  */
 function textNodesUnder(el) {
-    const children = [] // Type: Node[]
+    if(!el)
+    {
+        return [];
+    }
+    const children = []
     const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT)
     while(walker.nextNode()) {
       children.push(walker.currentNode)
     }
     return children
 }
-const textNodes = textNodesUnder(document.body);
+function findPostBody()
+{
+    var postBody = document.getElementById("post-body-text");
+    if(postBody) { return postBody; }
+    var postBody = document.getElementById("main-content");
+    if(postBody) { return postBody; }
+    var postBody = document.getElementById("post-content");
+    if(postBody) { return postBody; }
+    return null;
+}
+var postBody = findPostBody();
+const textNodes = textNodesUnder(postBody);
 const contentNodes = [];
 let fullText = '';
 textNodes.forEach(node => {
@@ -25,13 +40,14 @@ textNodes.forEach(node => {
     {
         return;
     }
-    if(node.nodeValue.length < 100)
+    if(node.parentNode.tagName === 'SCRIPT')
     {
         return;
     }
     fullText += ' ' + node.nodeValue.trim();
     contentNodes.push(node);
 });
+console.log(fullText);
 
 // Copied from https://unpkg.com/@trainorpj/sentiment@4.1.4/bundle/bundle.js
 
@@ -153,7 +169,10 @@ var lib = function (phrase, inject, callback) {
 };
 
 const analysis = lib(fullText);
+const absolute = Math.round(analysis.words.length / analysis.tokens.length * 100, 1);
 let feedback = "This page's content scored a " + analysis.score;
 feedback += " due to " + analysis.positive.length + " positive words and ";
-feedback += analysis.negative.length + " negative words.";
+feedback += analysis.negative.length + " negative words. ";
+feedback += absolute + "% of the words were emotionally charged words.";
+console.log(analysis);
 alert(feedback);
